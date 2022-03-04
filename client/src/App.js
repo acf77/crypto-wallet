@@ -8,9 +8,14 @@ import {
   FormSelect,
   Stack,
 } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { assetAction } from "./redux/actions/assetActions";
 import axios from "axios";
 
 import "bootswatch/dist/zephyr/bootstrap.min.css";
+import { AssetCard } from "./components/AssetCard";
+import { totalBRL, totalUSD } from "./components/Totals";
+import Loader from "./components/Loader";
 
 export const App = () => {
   const [asset, setAsset] = useState();
@@ -18,29 +23,18 @@ export const App = () => {
   const [assetList, setAssetList] = useState([]);
   const [qty, setQty] = useState([]);
 
+  const dispatch = useDispatch();
+  const assetFromRedux = useSelector((state) => state.asset);
+  const { loading, error, assetData } = assetFromRedux;
+
   const handleAddAsset = async (e) => {
     e.preventDefault();
-    const data = await axios.get(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${asset}&vs_currencies=${currency}&include_last_updated_at=true`
-    );
-    const value = await data.data[`${asset}`][`${currency}`];
-    const date = await data.data[`${asset}`]["last_updated_at"];
-    renderAddAsset(value, date);
+    dispatch(assetAction(asset, currency, qty, assetList));
+    // setAssetList(assetData);
   };
 
-  const renderAddAsset = async (value, date) => {
-    const upperCaseAsset = asset.charAt(0).toUpperCase() + asset.slice(1);
-    const list = [
-      ...assetList,
-      {
-        asset: upperCaseAsset,
-        currency: currency,
-        value: value * qty,
-        quantity: qty,
-        updatedAt: date,
-      },
-    ];
-    setAssetList(list);
+  const renderAddAsset = async (assetData) => {
+    const newList = [...assetList, assetData];
   };
 
   return (
@@ -70,56 +64,33 @@ export const App = () => {
           Add
         </Button>
       </Form>
-      {assetList.map((a) => (
-        <Card key={a.updatedAt + Math.random().toFixed(2)} className="p-3 my-3">
-          <Stack direction="horizontal" gap={3}>
-            <span> {a.quantity} un </span>
-            <span>
-              <i className={`fa-brands fa-${a.asset.toLowerCase()}`}></i>{" "}
-              {a.asset}
-            </span>
-            <Stack direction="horizontal" gap={3} className="ms-auto">
-              <span>
-                {a.currency.toUpperCase()}{" "}
-                {Intl.NumberFormat("en-us", {
-                  maximumSignificantDigits: 3,
-                }).format(a.value)}
-              </span>
-              <div className="vr" />
-              <Button className="ms-auto">
-                <i className="fa-solid fa-pen"></i>
-              </Button>
-            </Stack>
-            {/* <span> {Date(a.updatedAt).toLocaleString("en-us")} </span> */}
-          </Stack>
-        </Card>
-      ))}
+      {loading ? (
+        <Loader />
+      ) : (
+        assetData &&
+        assetData.map((asset) => <AssetCard key={Math.random()} {...asset} />)
+      )}
+
       <Card className="p-2 my-3">
         <Stack direction="horizontal" gap={3}>
           <span>Total </span>
           <Stack direction="horizontal" gap={3} className="ms-auto">
-            <span>
-              🇧🇷 BRL{" "}
-              {Intl.NumberFormat("en-us", {
-                maximumSignificantDigits: 3,
-              }).format(
-                assetList
-                  .filter((c) => c.currency === "brl")
-                  .map((c) => c.value)
-                  .reduce((acc, num) => acc + num, 0)
-              )}
-            </span>
-            <span>
-              🇺🇸 USD{" "}
-              {Intl.NumberFormat("en-us", {
-                maximumSignificantDigits: 3,
-              }).format(
-                assetList
-                  .filter((c) => c.currency === "usd")
-                  .map((c) => c.value)
-                  .reduce((acc, num) => acc + num, 0)
-              )}
-            </span>
+            {/* {totalBRL(assetList) > 0 && (
+              <span>
+                🇧🇷 BRL{" "}
+                {Intl.NumberFormat("en-us", {
+                  maximumSignificantDigits: 3,
+                }).format(totalBRL(assetList))}
+              </span>
+            )}
+            {totalUSD(assetList) > 0 && (
+              <span>
+                🇺🇸 USD{" "}
+                {Intl.NumberFormat("en-us", {
+                  maximumSignificantDigits: 3,
+                }).format(totalUSD(assetList))}
+              </span>
+            )} */}
           </Stack>
         </Stack>
       </Card>

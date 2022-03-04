@@ -3,14 +3,25 @@ import {
   ADD_ASSET_REQUEST,
   ADD_ASSET_FAIL,
   DELETE_ASSET,
+  LIST_ASSETS_REQUEST,
+  LIST_ASSETS_SUCCESS,
+  LIST_ASSETS_FAIL,
 } from "../constants/constants";
 
-export const assetReducer = (state = {}, action) => {
+export const assetReducer = (state = [], action) => {
   switch (action.type) {
+    case LIST_ASSETS_REQUEST:
+      return { loading: true };
+    case LIST_ASSETS_SUCCESS:
+      return { ...state, loading: false, assetData: action.payload };
+    case LIST_ASSETS_FAIL:
+      return { ...state, loading: false, assetData: action.payload };
     case ADD_ASSET_REQUEST:
       return { loading: true };
     case ADD_ASSET_SUCCESS:
       return { ...state, loading: false, assetData: action.payload };
+    case ADD_ASSET_FAIL:
+      return { ...state, loading: false, error: action.payload };
     case ADD_ASSET_FAIL:
       return { ...state, loading: false, error: action.payload };
     case DELETE_ASSET:

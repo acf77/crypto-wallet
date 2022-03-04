@@ -9,11 +9,10 @@ import {
   Stack,
 } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
 
 import "bootswatch/dist/zephyr/bootstrap.min.css";
 import { AssetCard } from "./components/AssetCard";
-import { assetAdd } from "./redux/actions/assetActions";
+import { assetAdd, listAssets } from "./redux/actions/assetActions";
 import { totalBRL, totalUSD } from "./components/Totals";
 import Loader from "./components/Loader";
 
@@ -33,9 +32,7 @@ export const App = () => {
   };
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/api/asset")
-      .then((r) => setAssetList(r.data));
+    dispatch(listAssets());
   }, []);
 
   return (
@@ -68,7 +65,8 @@ export const App = () => {
       {loading ? (
         <Loader />
       ) : (
-        assetList.map((asset) => <AssetCard key={Math.random()} {...asset} />)
+        assetData &&
+        assetData.map((asset) => <AssetCard key={Math.random()} {...asset} />)
       )}
 
       <Card
@@ -80,20 +78,20 @@ export const App = () => {
             <span>
               <strong>Total:</strong>
             </span>
-            {totalBRL(assetList) > 0 && (
+            {assetData && (
               <span>
                 🇧🇷 BRL{" "}
                 {Intl.NumberFormat("en-us", {
                   maximumSignificantDigits: 3,
-                }).format(totalBRL(assetList))}
+                }).format(totalBRL(assetData))}
               </span>
             )}
-            {totalUSD(assetList) > 0 && (
+            {assetData && (
               <span>
                 🇺🇸 USD{" "}
                 {Intl.NumberFormat("en-us", {
                   maximumSignificantDigits: 3,
-                }).format(totalUSD(assetList))}
+                }).format(totalUSD(assetData))}
               </span>
             )}
           </Stack>

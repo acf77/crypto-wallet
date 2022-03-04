@@ -62,8 +62,9 @@ app.post("/api/asset", urlEncodedParser, (req, res) => {
 });
 
 app.post("/api/asset/delete", urlEncodedParser, (req, res) => {
-  const assetId = req.body.id;
-  Asset.findByIdAndDelete(assetId).then((r) => res.json(r));
+  const assetId = Object.keys(req.body);
+  // console.log(assetId);
+  Asset.findByIdAndDelete(assetId).then((r) => console.log(r));
 });
 
 app.get("/api/asset", (req, res) => {

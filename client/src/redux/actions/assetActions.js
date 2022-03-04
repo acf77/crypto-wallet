@@ -3,9 +3,32 @@ import {
   ADD_ASSET_REQUEST,
   ADD_ASSET_FAIL,
   DELETE_ASSET,
+  LIST_ASSETS_REQUEST,
+  LIST_ASSETS_SUCCESS,
+  LIST_ASSETS_FAIL,
 } from "../constants/constants";
 import axios from "axios";
 
+export const listAssets = () => async (dispatch) => {
+  try {
+    dispatch({
+      type: LIST_ASSETS_REQUEST,
+    });
+
+    const { data } = await axios.get("http://localhost:8080/api/asset");
+    console.log(data);
+
+    dispatch({
+      type: LIST_ASSETS_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: LIST_ASSETS_FAIL,
+      payload: error.response,
+    });
+  }
+};
 export const assetAdd = (asset, currency, qty) => async (dispatch) => {
   try {
     dispatch({
@@ -36,9 +59,11 @@ export const assetDelete = (asset) => async (dispatch) => {
       type: DELETE_ASSET,
     });
 
-    await axios.post("http://localhost:8080/api/asset/delete", {
-      id: asset._id,
-    });
+    await axios.post("http://localhost:8080/api/asset/delete", asset).then(
+      dispatch({
+        type: LIST_ASSETS_SUCCESS,
+      })
+    );
   } catch (error) {
     dispatch({
       type: ADD_ASSET_FAIL,

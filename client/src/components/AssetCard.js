@@ -17,7 +17,7 @@ export const AssetCard = (asset) => {
   const handleClose = () => setIsModalOpen(false);
 
   const handleDelete = () => {
-    dispatch(assetDelete(asset));
+    dispatch(assetDelete(asset._id));
   };
 
   return (

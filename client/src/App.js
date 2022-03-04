@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -9,11 +9,11 @@ import {
   Stack,
 } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { assetAction } from "./redux/actions/assetActions";
 import axios from "axios";
 
 import "bootswatch/dist/zephyr/bootstrap.min.css";
 import { AssetCard } from "./components/AssetCard";
+import { assetAdd } from "./redux/actions/assetActions";
 import { totalBRL, totalUSD } from "./components/Totals";
 import Loader from "./components/Loader";
 
@@ -29,13 +29,14 @@ export const App = () => {
 
   const handleAddAsset = async (e) => {
     e.preventDefault();
-    dispatch(assetAction(asset, currency, qty, assetList));
-    // setAssetList(assetData);
+    dispatch(assetAdd(asset, currency, qty));
   };
 
-  const renderAddAsset = async (assetData) => {
-    const newList = [...assetList, assetData];
-  };
+  useEffect(() => {
+    axios
+      .get("http://localhost:8080/api/asset")
+      .then((r) => setAssetList(r.data));
+  }, []);
 
   return (
     <Container>
@@ -67,15 +68,19 @@ export const App = () => {
       {loading ? (
         <Loader />
       ) : (
-        assetData &&
-        assetData.map((asset) => <AssetCard key={Math.random()} {...asset} />)
+        assetList.map((asset) => <AssetCard key={Math.random()} {...asset} />)
       )}
 
-      <Card className="p-2 my-3">
+      <Card
+        className="p-2 my-3"
+        style={{ backgroundColor: "#2C4CC4", color: "#f7f7f7" }}
+      >
         <Stack direction="horizontal" gap={3}>
-          <span>Total </span>
           <Stack direction="horizontal" gap={3} className="ms-auto">
-            {/* {totalBRL(assetList) > 0 && (
+            <span>
+              <strong>Total:</strong>
+            </span>
+            {totalBRL(assetList) > 0 && (
               <span>
                 🇧🇷 BRL{" "}
                 {Intl.NumberFormat("en-us", {
@@ -90,7 +95,7 @@ export const App = () => {
                   maximumSignificantDigits: 3,
                 }).format(totalUSD(assetList))}
               </span>
-            )} */}
+            )}
           </Stack>
         </Stack>
       </Card>

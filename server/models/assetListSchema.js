@@ -14,10 +14,10 @@ const assetListSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    updatedAt: {
-      type: Number,
-      required: false,
-    },
+    // updatedAt: {
+    //   type: Number,
+    //   required: false,
+    // },
     value: {
       type: Number,
       required: true,

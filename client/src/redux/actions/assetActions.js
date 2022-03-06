@@ -51,6 +51,30 @@ export const assetAdd = (asset, currency, qty) => async (dispatch) => {
     });
   }
 };
+export const assetUpdate = (editAsset, currency, qty) => async (dispatch) => {
+  // try {
+  //   dispatch({
+  //     type: ADD_ASSET_REQUEST,
+  //   });
+  //   const assetRequestData = {
+  //     quantity: Number(qty),
+  //     asset: editAsset,
+  //     currency: currency,
+  //   };
+  //   await axios.post(
+  //     "http://localhost:8080/api/asset/update",
+  //     assetRequestData
+  //   );
+  //   dispatch({
+  //     type: ADD_ASSET_SUCCESS,
+  //   });
+  // } catch (error) {
+  //   dispatch({
+  //     type: ADD_ASSET_FAIL,
+  //     payload: error.response,
+  //   });
+  // }
+};
 
 export const assetDelete = (asset) => async (dispatch) => {
   try {
@@ -61,6 +85,7 @@ export const assetDelete = (asset) => async (dispatch) => {
     await axios.post("http://localhost:8080/api/asset/delete", asset);
   } catch (error) {
     dispatch({
+      type: ADD_ASSET_FAIL,
       payload: error.response,
     });
   }

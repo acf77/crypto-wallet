@@ -64,7 +64,11 @@ export const AssetCard = (asset) => {
           </Button>
         </Stack>
       </Stack>
-      <EditAssetDialog isOpen={isEditModalOpen} onDismiss={handleEditClose} />
+      <EditAssetDialog
+        isOpen={isEditModalOpen}
+        onDismiss={handleEditClose}
+        {...asset}
+      />
     </Card>
   );
 };

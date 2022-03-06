@@ -1,44 +1,65 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { Button, Form, FormControl, FormSelect } from "react-bootstrap";
 import { Dialog } from "@reach/dialog";
-import axios from "axios";
 
 import "@reach/dialog/styles.css";
+import { assetAdd } from "../redux/actions/assetActions";
 
-export const EditAssetDialog = ({ isOpen, onDismiss, assetData }) => {
-  // const [asset, setAsset] = useState();
-  // const [qty, setQty] = useState([]);
-  // const [currency, setCurrency] = useState();
+export const EditAssetDialog = (props) => {
+  const [editAsset, setEditAsset] = useState(props.asset);
+  const [qty, setQty] = useState(props.quantity);
+  const [currency, setCurrency] = useState(props.currency);
   // const [assetList, setAssetList] = useState([]);
 
-  // const handleAddAsset = async (e) => {
-  //   e.preventDefault();
-  //   const data = await axios.get(
-  //     `https://api.coingecko.com/api/v3/simple/price?ids=${asset}&vs_currencies=${currency}&include_last_updated_at=true`
-  //   );
-  //   const value = await data.data[`${asset}`][`${currency}`];
-  //   const date = await data.data[`${asset}`]["last_updated_at"];
-  //   renderAddAsset(value, date);
-  // };
+  const dispatch = useDispatch();
 
-  // const renderAddAsset = (value, date) => {
-  //   const upperCaseAsset = asset.charAt(0).toUpperCase() + asset.slice(1);
-  //   const list = [
-  //     ...assetList,
-  //     {
-  //       asset: upperCaseAsset,
-  //       currency: currency,
-  //       value: value * qty,
-  //       quantity: qty,
-  //       updatedAt: date,
-  //     },
-  //   ];
-  //   setAssetList(list);
-  // };
+  const handleAddAsset = async (e) => {
+    // e.preventDefault();
+    dispatch(assetAdd(editAsset, currency, qty));
+  };
 
   return (
-    <Dialog isOpen={isOpen} onDismiss={onDismiss} aria-labelledby="label">
-      <h4>Edit assets</h4>
+    <Dialog
+      isOpen={props.isOpen}
+      onDismiss={props.onDismiss}
+      aria-labelledby="label"
+    >
+      <h4>Edit asset</h4>
+      <Form onSubmit={handleAddAsset}>
+        <Form.Label className="my-2">Edit asset</Form.Label>
+        <FormSelect
+          value={props.asset}
+          onChange={(e) => setEditAsset(e.target.value)}
+        >
+          <option>Select asset</option>
+          <option value="bitcoin">Bitcoin (BTC)</option>
+          <option value="ethereum">Ethereum (ETH)</option>
+          <option value="dogecoin">Dogecoin (DOGE)</option>
+        </FormSelect>
+        <Form.Label className="my-2">Edit amount</Form.Label>
+        <FormControl
+          type="number"
+          step="0.01"
+          value={props.quantity}
+          onChange={(e) => setQty(e.target.value)}
+        />
+        <Form.Label className="my-2">Edit currency</Form.Label>
+        <FormSelect
+          value={props.currency}
+          onChange={(e) => setCurrency(e.target.value)}
+        >
+          <option>Select currency</option>
+          <option value="usd">USD</option>
+          <option value="brl">BRL</option>
+        </FormSelect>
+        <Button type="submit" className="my-2">
+          Add
+        </Button>
+        <Button onClick={props.onDismiss} variant="danger" className="my-2">
+          Cancel
+        </Button>
+      </Form>
     </Dialog>
   );
 };

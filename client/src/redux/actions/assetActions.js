@@ -16,7 +16,6 @@ export const listAssets = () => async (dispatch) => {
     });
 
     const { data } = await axios.get("http://localhost:8080/api/asset");
-    console.log(data);
 
     dispatch({
       type: LIST_ASSETS_SUCCESS,
@@ -59,14 +58,9 @@ export const assetDelete = (asset) => async (dispatch) => {
       type: DELETE_ASSET,
     });
 
-    await axios.post("http://localhost:8080/api/asset/delete", asset).then(
-      dispatch({
-        type: LIST_ASSETS_SUCCESS,
-      })
-    );
+    await axios.post("http://localhost:8080/api/asset/delete", asset);
   } catch (error) {
     dispatch({
-      type: ADD_ASSET_FAIL,
       payload: error.response,
     });
   }

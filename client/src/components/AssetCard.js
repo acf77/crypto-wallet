@@ -1,23 +1,43 @@
 import React, { useState } from "react";
 import { Button, Card, Stack } from "react-bootstrap";
+import { confirmAlert } from "react-confirm-alert";
 
 import { EditAssetDialog } from "./EditDialog";
 import { useDispatch } from "react-redux";
+
 import { assetDelete } from "../redux/actions/assetActions";
+import { listAssets } from "../redux/actions/assetActions";
+import "react-confirm-alert/src/react-confirm-alert.css";
 
 export const AssetCard = (asset) => {
   const dispatch = useDispatch();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const handleEditOpen = () => setIsEditModalOpen(true);
+  const handleEditClose = () => setIsEditModalOpen(false);
 
   const assetUpperCase =
     asset.asset.charAt(0).toUpperCase() + asset.asset.slice(1);
 
-  const handleOpen = () => setIsModalOpen(true);
-  const handleClose = () => setIsModalOpen(false);
-
   const handleDelete = () => {
-    dispatch(assetDelete(asset._id));
+    confirmAlert({
+      title: "Delete asset",
+      message: `Are you sure you want to delete ${asset.quantity} ${assetUpperCase}s from your wallet?`,
+      buttons: [
+        {
+          label: "Yes",
+          onClick: () => {
+            dispatch(assetDelete(asset._id));
+            dispatch(listAssets());
+          },
+        },
+        {
+          label: "No",
+          onClick: null,
+        },
+      ],
+    });
   };
 
   return (
@@ -36,7 +56,7 @@ export const AssetCard = (asset) => {
             }).format(asset.value)}
           </span>
           <div className="vr" />
-          <Button onClick={handleOpen} className="ms-auto">
+          <Button onClick={handleEditOpen} className="ms-auto">
             <i className="fa-solid fa-pen"></i>
           </Button>
           <Button variant="danger" onClick={handleDelete} className="ms-auto">
@@ -44,7 +64,7 @@ export const AssetCard = (asset) => {
           </Button>
         </Stack>
       </Stack>
-      <EditAssetDialog isOpen={isModalOpen} onDismiss={handleClose} />
+      <EditAssetDialog isOpen={isEditModalOpen} onDismiss={handleEditClose} />
     </Card>
   );
 };

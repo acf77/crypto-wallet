@@ -19,7 +19,6 @@ import Loader from "./components/Loader";
 export const App = () => {
   const [asset, setAsset] = useState();
   const [currency, setCurrency] = useState();
-  const [assetList, setAssetList] = useState([]);
   const [qty, setQty] = useState([]);
 
   const dispatch = useDispatch();
@@ -27,7 +26,7 @@ export const App = () => {
   const { loading, error, assetData } = assetFromRedux;
 
   const handleAddAsset = async (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     dispatch(assetAdd(asset, currency, qty));
   };
 
@@ -66,7 +65,10 @@ export const App = () => {
         <Loader />
       ) : (
         assetData &&
-        assetData.map((asset) => <AssetCard key={Math.random()} {...asset} />)
+        assetData
+          .slice(0)
+          .reverse()
+          .map((asset) => <AssetCard key={asset._id} {...asset} />)
       )}
 
       <Card

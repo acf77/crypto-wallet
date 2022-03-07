@@ -6,6 +6,9 @@ import {
   LIST_ASSETS_REQUEST,
   LIST_ASSETS_SUCCESS,
   LIST_ASSETS_FAIL,
+  EDIT_ASSETS_REQUEST,
+  EDIT_ASSETS_SUCCESS,
+  EDIT_ASSETS_FAIL,
 } from "../constants/constants";
 import axios from "axios";
 
@@ -51,30 +54,29 @@ export const assetAdd = (asset, currency, qty) => async (dispatch) => {
     });
   }
 };
-export const assetUpdate = (editAsset, currency, qty) => async (dispatch) => {
-  // try {
-  //   dispatch({
-  //     type: ADD_ASSET_REQUEST,
-  //   });
-  //   const assetRequestData = {
-  //     quantity: Number(qty),
-  //     asset: editAsset,
-  //     currency: currency,
-  //   };
-  //   await axios.post(
-  //     "http://localhost:8080/api/asset/update",
-  //     assetRequestData
-  //   );
-  //   dispatch({
-  //     type: ADD_ASSET_SUCCESS,
-  //   });
-  // } catch (error) {
-  //   dispatch({
-  //     type: ADD_ASSET_FAIL,
-  //     payload: error.response,
-  //   });
-  // }
-};
+export const assetUpdate =
+  (editAsset, currency, qty, props) => async (dispatch) => {
+    try {
+      dispatch({
+        type: EDIT_ASSETS_REQUEST,
+      });
+      const assetEditData = {
+        quantity: Number(qty),
+        asset: editAsset,
+        currency: currency,
+        id: props._id,
+      };
+      await axios.post("http://localhost:8080/api/asset/update", assetEditData);
+      dispatch({
+        type: EDIT_ASSETS_SUCCESS,
+      });
+    } catch (error) {
+      dispatch({
+        type: EDIT_ASSETS_FAIL,
+        payload: error.response,
+      });
+    }
+  };
 
 export const assetDelete = (asset) => async (dispatch) => {
   try {

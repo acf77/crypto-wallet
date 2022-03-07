@@ -32,7 +32,7 @@ export const App = () => {
 
   useEffect(() => {
     dispatch(listAssets());
-  }, []);
+  }, [dispatch]);
 
   return (
     <Container>

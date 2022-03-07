@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Button, Form, FormControl, FormSelect } from "react-bootstrap";
+import { Button, Form, FormControl, FormSelect, Stack } from "react-bootstrap";
 import { Dialog } from "@reach/dialog";
 
 import "@reach/dialog/styles.css";
-import { assetAdd } from "../redux/actions/assetActions";
+import { assetUpdate, listAssets } from "../redux/actions/assetActions";
 
 export const EditAssetDialog = (props) => {
   const [editAsset, setEditAsset] = useState(props.asset);
@@ -14,9 +14,10 @@ export const EditAssetDialog = (props) => {
 
   const dispatch = useDispatch();
 
-  const handleAddAsset = async (e) => {
-    // e.preventDefault();
-    dispatch(assetAdd(editAsset, currency, qty));
+  const handleEditAsset = async (e) => {
+    dispatch(assetUpdate(editAsset, currency, qty, props));
+    dispatch(listAssets());
+    window.location.reload();
   };
 
   return (
@@ -26,10 +27,10 @@ export const EditAssetDialog = (props) => {
       aria-labelledby="label"
     >
       <h4>Edit asset</h4>
-      <Form onSubmit={handleAddAsset}>
+      <Form onSubmit={handleEditAsset}>
         <Form.Label className="my-2">Edit asset</Form.Label>
         <FormSelect
-          value={props.asset}
+          value={editAsset}
           onChange={(e) => setEditAsset(e.target.value)}
         >
           <option>Select asset</option>
@@ -41,24 +42,26 @@ export const EditAssetDialog = (props) => {
         <FormControl
           type="number"
           step="0.01"
-          value={props.quantity}
+          value={qty}
           onChange={(e) => setQty(e.target.value)}
         />
         <Form.Label className="my-2">Edit currency</Form.Label>
         <FormSelect
-          value={props.currency}
+          value={currency}
           onChange={(e) => setCurrency(e.target.value)}
         >
           <option>Select currency</option>
           <option value="usd">USD</option>
           <option value="brl">BRL</option>
         </FormSelect>
-        <Button type="submit" className="my-2">
-          Add
-        </Button>
-        <Button onClick={props.onDismiss} variant="danger" className="my-2">
-          Cancel
-        </Button>
+        <Stack direction="horizontal" gap={3}>
+          <Button onClick={props.onDismiss} variant="danger" className="my-2">
+            Cancel
+          </Button>
+          <Button type="submit" className="my-2">
+            Edit
+          </Button>
+        </Stack>
       </Form>
     </Dialog>
   );

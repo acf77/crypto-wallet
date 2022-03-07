@@ -68,8 +68,37 @@ app.post("/api/asset/delete", urlEncodedParser, (req, res) => {
 });
 
 app.post("/api/asset/update", urlEncodedParser, (req, res) => {
-  const assetId = Object.keys(req.body);
-  // console.log(assetId);
+  const assetEditData = req.body;
+
+  const updateDb = async () => {
+    const call = await axios.get(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${assetEditData.asset}&vs_currencies=${assetEditData.currency}`
+    );
+
+    const value =
+      call.data[`${assetEditData.asset}`][`${assetEditData.currency}`] *
+      assetEditData.quantity;
+
+    Asset.findByIdAndUpdate(
+      { _id: assetEditData.id },
+      {
+        asset: assetEditData.asset,
+        currency: assetEditData.currency,
+        quantity: assetEditData.quantity,
+        value: value,
+      },
+      function (err, result) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      }
+    );
+  };
+
+  updateDb();
+
   // Asset.findByIdAndUpdate(assetId._id).then((r) => console.log(r));
 });
 

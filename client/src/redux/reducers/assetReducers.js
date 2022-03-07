@@ -18,19 +18,29 @@ export const assetReducer = (state = [], action) => {
     case LIST_ASSETS_SUCCESS:
       return { ...state, loading: false, assetData: action.payload };
     case LIST_ASSETS_FAIL:
-      return { ...state, loading: false, assetData: action.payload };
+      return { loading: false, error: true, errorData: action.payload };
     case ADD_ASSET_REQUEST:
       return { loading: true };
     case ADD_ASSET_SUCCESS:
       return { ...state, loading: false, assetData: action.payload };
     case ADD_ASSET_FAIL:
-      return { ...state, loading: false, error: action.payload };
+      return {
+        ...state,
+        loading: false,
+        error: true,
+        errorData: action.payload,
+      };
     case EDIT_ASSETS_REQUEST:
       return { loading: true };
     case EDIT_ASSETS_SUCCESS:
       return { ...state, loading: false, assetData: action.payload };
     case EDIT_ASSETS_FAIL:
-      return { ...state, loading: false, error: action.payload };
+      return {
+        ...state,
+        loading: false,
+        error: true,
+        errorData: action.payload,
+      };
     case DELETE_ASSET:
       return {};
     default:

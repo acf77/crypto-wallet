@@ -26,40 +26,56 @@ app.use(
 // @ Public
 // @ Gets data from client and requests asset info from CoinGecko API
 
-app.post("/api/asset", urlEncodedParser, (req, res) => {
-  const data = req.body;
+app.post(
+  "/api/asset",
+  urlEncodedParser,
+  // [
+  //   check("valueValidation", "Amount must be higher than zero")
+  //     .exists()
+  //     .isLength({ min: 0.01 }),
+  // ],
+  (req, res) => {
+    const data = req.body;
+    // const valueValidation = data.quantity;
+    // const errors = validationResult(req);
+    // if (!errors.isEmpty()) {
+    //   const errorArray = errors.array();
+    //   res.render("index-error", { errorArray: errorArray[0].msg });
 
-  const handleSendToDb = async (data) => {
-    const call = await axios.get(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${data.asset}&vs_currencies=${data.currency}`
-    );
+    // }
 
-    const value =
-      call.data[`${data.asset}`][`${data.currency}`] * data.quantity;
+    const handleSendToDb = async (data) => {
+      const call = await axios.get(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${data.asset}&vs_currencies=${data.currency}`
+      );
 
-    const apiData = Asset.create({
-      asset: data.asset,
-      value: Number(value),
-      quantity: data.quantity,
-      currency: data.currency,
-      // updatedAt: call.data[`${data.asset}`]["last_updated_at"],
-    }).then((r) => console.log(r));
+      const value =
+        call.data[`${data.asset}`][`${data.currency}`] * data.quantity;
 
-    if (apiData) {
-      res.status(201).json({
-        asset: apiData.asset,
-        value: apiData.value,
-        quantity: apiData.quantity,
-        currency: apiData.currency,
-      });
-    } else {
-      res.status(400);
-      throw new Error("Invalid asset data");
-    }
-  };
+      const apiData = Asset.create({
+        asset: data.asset,
+        value: Number(value),
+        quantity: data.quantity,
+        currency: data.currency,
+        // updatedAt: call.data[`${data.asset}`]["last_updated_at"],
+      }).then((r) => console.log(r));
 
-  handleSendToDb(data);
-});
+      if (apiData) {
+        res.status(201).json({
+          asset: apiData.asset,
+          value: apiData.value,
+          quantity: apiData.quantity,
+          currency: apiData.currency,
+        });
+      } else {
+        res.status(400);
+        throw new Error("Invalid asset data");
+      }
+    };
+
+    handleSendToDb(data);
+  }
+);
 
 app.post("/api/asset/delete", urlEncodedParser, (req, res) => {
   const assetId = Object.keys(req.body);

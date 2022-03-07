@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  Alert,
   Button,
   Card,
   Container,
@@ -17,17 +18,18 @@ import { totalBRL, totalUSD } from "./components/Totals";
 import Loader from "./components/Loader";
 
 export const App = () => {
-  const [asset, setAsset] = useState();
-  const [currency, setCurrency] = useState();
-  const [qty, setQty] = useState([]);
+  const [asset, setAsset] = useState(null);
+  const [currency, setCurrency] = useState(null);
+  const [qty, setQty] = useState(0);
 
   const dispatch = useDispatch();
   const assetFromRedux = useSelector((state) => state.asset);
   const { loading, error, assetData } = assetFromRedux;
 
-  const handleAddAsset = async (e) => {
+  const handleAddAsset = async () => {
     // e.preventDefault();
     dispatch(assetAdd(asset, currency, qty));
+    console.table(asset, currency, qty);
   };
 
   useEffect(() => {
@@ -40,10 +42,9 @@ export const App = () => {
       <Form onSubmit={handleAddAsset}>
         <Form.Label className="my-2">Choose asset</Form.Label>
         <FormSelect onChange={(e) => setAsset(e.target.value)}>
-          <option>Select asset</option>
+          <option value={null}>Select asset</option>
           <option value="bitcoin">Bitcoin (BTC)</option>
           <option value="ethereum">Ethereum (ETH)</option>
-          <option value="dogecoin">Dogecoin (DOGE)</option>
         </FormSelect>
         <Form.Label className="my-2">Amount</Form.Label>
         <FormControl
@@ -53,16 +54,20 @@ export const App = () => {
         />
         <Form.Label className="my-2">Select currency</Form.Label>
         <FormSelect onChange={(e) => setCurrency(e.target.value)}>
-          <option>Select currency</option>
+          <option value={null}>Select currency</option>
           <option value="usd">USD</option>
           <option value="brl">BRL</option>
         </FormSelect>
-        <Button type="submit" className="my-2">
+        <Button disabled={qty === 0} type="submit" className="my-2">
           Add
         </Button>
       </Form>
       {loading ? (
         <Loader />
+      ) : error ? (
+        <Alert variant="danger">
+          An error occurred. Please, reload the page.
+        </Alert>
       ) : (
         assetData &&
         assetData

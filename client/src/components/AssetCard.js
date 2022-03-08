@@ -23,13 +23,16 @@ export const AssetCard = (asset) => {
 
   const [currentAssetPrice, setCurrentAssetPrice] = useState(0);
 
-  useEffect(async () => {
-    const call = await axios.get(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${asset.asset}&vs_currencies=${asset.currency}&include_last_updated_at=true`
-    );
-    const callData = call.data;
-    setCurrentAssetPrice(callData[`${asset.asset}`][`${asset.currency}`]);
-  }, []);
+  useEffect(() => {
+    const callFromDb = async () => {
+      const call = await axios.get(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${asset.asset}&vs_currencies=${asset.currency}&include_last_updated_at=true`
+      );
+      const callData = call.data;
+      setCurrentAssetPrice(callData[`${asset.asset}`][`${asset.currency}`]);
+    };
+    callFromDb();
+  }, [asset.asset, asset.currency]);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
@@ -47,7 +50,7 @@ export const AssetCard = (asset) => {
         {
           label: "Yes",
           onClick: () => {
-            dispatch(assetDelete(asset._id));
+            dispatch(assetDelete(asset));
             dispatch(listAssets());
           },
         },

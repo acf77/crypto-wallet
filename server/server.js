@@ -3,7 +3,6 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import axios from "axios";
 import dotenv from "dotenv";
-import asyncHandler from "async-handler";
 import connectDB from "./db/db.js";
 import Asset from "./models/assetListSchema.js";
 
@@ -45,31 +44,26 @@ app.post(
     // }
 
     const handleSendToDb = async (data) => {
-      const call = await axios.get(
-        `https://api.coingecko.com/api/v3/simple/price?ids=${data.asset}&vs_currencies=${data.currency}`
-      );
+      try {
+        const call = await axios.get(
+          `https://api.coingecko.com/api/v3/simple/price?ids=${data.asset}&vs_currencies=${data.currency}`
+        );
 
-      const value =
-        call.data[`${data.asset}`][`${data.currency}`] * data.quantity;
+        const value =
+          call.data[`${data.asset}`][`${data.currency}`] * data.quantity;
 
-      const apiData = Asset.create({
-        asset: data.asset,
-        value: Number(value),
-        quantity: data.quantity,
-        currency: data.currency,
-        // updatedAt: call.data[`${data.asset}`]["last_updated_at"],
-      }).then((r) => console.log(r));
-
-      if (apiData) {
-        res.status(201).json({
-          asset: apiData.asset,
-          value: apiData.value,
-          quantity: apiData.quantity,
-          currency: apiData.currency,
+        const apiData = await Asset.create({
+          asset: data.asset,
+          value: Number(value),
+          quantity: data.quantity,
+          currency: data.currency,
+          // updatedAt: call.data[`${data.asset}`]["last_updated_at"],
         });
-      } else {
+
+        res.status(201).json(apiData);
+      } catch (error) {
         res.status(400);
-        throw new Error("Invalid asset data");
+        throw new Error(error.message);
       }
     };
 
@@ -78,48 +72,59 @@ app.post(
 );
 
 app.post("/api/asset/delete", urlEncodedParser, (req, res) => {
-  const assetId = Object.keys(req.body);
-  // console.log(assetId);
-  Asset.findByIdAndDelete(assetId).then((r) => console.log(r));
+  const deleteFromDb = async () => {
+    try {
+      const assetId = Object.keys(req.body);
+      const deleteAsset = await Asset.findByIdAndDelete(assetId);
+      res.status(201).json(deleteAsset);
+    } catch (error) {
+      res.status(400);
+      throw new Error(error.message);
+    }
+  };
+  deleteFromDb();
 });
 
 app.post("/api/asset/update", urlEncodedParser, (req, res) => {
   const assetEditData = req.body;
 
   const updateDb = async () => {
-    const call = await axios.get(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${assetEditData.asset}&vs_currencies=${assetEditData.currency}`
-    );
+    try {
+      const call = await axios.get(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${assetEditData.asset}&vs_currencies=${assetEditData.currency}`
+      );
 
-    const value =
-      call.data[`${assetEditData.asset}`][`${assetEditData.currency}`] *
-      assetEditData.quantity;
+      const value =
+        call.data[`${assetEditData.asset}`][`${assetEditData.currency}`] *
+        assetEditData.quantity;
 
-    Asset.findByIdAndUpdate(
-      { _id: assetEditData.id },
-      {
-        asset: assetEditData.asset,
-        currency: assetEditData.currency,
-        quantity: assetEditData.quantity,
-        value: value,
-      },
-      function (err, result) {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(result);
+      const updateAsset = await Asset.findByIdAndUpdate(
+        { _id: assetEditData.id },
+        {
+          asset: assetEditData.asset,
+          currency: assetEditData.currency,
+          quantity: assetEditData.quantity,
+          value: value,
         }
-      }
-    );
+      );
+
+      res.status(201).json(updateAsset);
+    } catch (error) {}
   };
-
   updateDb();
-
-  // Asset.findByIdAndUpdate(assetId._id).then((r) => console.log(r));
 });
 
 app.get("/api/asset", (req, res) => {
-  Asset.find({}).then((r) => res.status(201).json(r));
+  const listDataFromDb = async () => {
+    try {
+      const data = await Asset.find({});
+      res.status(200).json(data);
+    } catch (error) {
+      res.status(400);
+      throw new Error(error.message);
+    }
+  };
+  listDataFromDb();
 });
 
 app.use("/", (req, res) => res.send("API is running..."));

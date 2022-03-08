@@ -84,7 +84,7 @@ export const assetDelete = (asset) => async (dispatch) => {
       type: DELETE_ASSET,
     });
 
-    await axios.post("http://localhost:8080/api/asset/delete", asset);
+    await axios.post("http://localhost:8080/api/asset/delete", asset._id);
   } catch (error) {
     dispatch({
       type: ADD_ASSET_FAIL,

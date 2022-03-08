@@ -29,7 +29,6 @@ export const App = () => {
   const handleAddAsset = async () => {
     // e.preventDefault();
     dispatch(assetAdd(asset, currency, qty));
-    console.table(asset, currency, qty);
   };
 
   useEffect(() => {

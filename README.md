@@ -30,9 +30,9 @@ This project used the libraries:
 # Features
 
 **Add as many assets as you want**
-- Add assets to be stored on your wallet, with realtime data from [Coingecko]()
+- Add assets to be stored on your wallet, with realtime data from [Coingecko](https://www.coingecko.com)
 
-![image](https://user-images.githubusercontent.com/61336548/157304005-d6fc4c54-438c-40f3-8075-0fb496e3f7df.png)
+![ezgif-5-927eeb5909](https://user-images.githubusercontent.com/61336548/157306106-5e2a540c-c0c4-41bc-aee0-be3dfa7eab2b.gif)
 
 
 
